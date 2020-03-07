@@ -1,11 +1,10 @@
 #![recursion_limit = "128"]
 
-mod barrier;
 mod button;
 mod counter;
-
-use barrier::Barrier;
+mod calc_btn;
 use counter::{Color, Counter};
+use calc_btn::{CalcButton};
 use yew::prelude::*;
 
 pub struct Model {
@@ -19,6 +18,7 @@ pub enum Msg {
     Toggle,
     ChildClicked(u32),
 }
+
 
 impl Component for Model {
     type Message = Msg;
@@ -47,17 +47,68 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
+        let btns = vec![
+            "C", "(", ")", "/",
+            "7", "8", "9", "*",
+            "4", "5", "6", "-",
+            "1", "2", "3", "+",
+            "0", ".", "=", ""
+        ];
         let counter = |x| {
             html! {
                 <Counter initial=x color=&self.color
                     onclick=self.link.callback(Msg::ChildClicked) />
             }
         };
+        let calc_btn = |x| {
+            html! {
+                <CalcButton>
+                    <span>{btns[x]}</span>
+                </CalcButton>
+            }
+        };
+
+
+        let style_container = {
+            vec![
+                "width: 480px",
+                "background: #2a2c2f",
+                "margin: 0 auto",
+                "color: #ffffff",
+            ].join("; ") + ";"
+        };
+        let style_screen = {
+            vec![
+                "width: 100%",
+                "background: #2a2c2f",
+                "font-size: 28px",
+                "padding: 0 30px",
+                "box-sizing: border-box"
+            ].join("; ") + ";"
+        };
+
+        let style_btn_list = {
+            vec![
+                "width: 100%",
+                "display: flex",
+            ].join("; ") + ";"
+        };
+        
         html! {
-            <div class="custom-components-example">
+            <div style=style_container>
                 <button onclick=self.link.callback(|_| Msg::Toggle)>{ "Toggle" }</button>
                 { self.view_barrier() }
-                { for (1..2).map(counter) }
+                {for (0..0).map(counter)}
+                // <!-- calculator -->
+
+                <div >
+                    <div style=style_screen>
+                        <span>{"1+(2-3)*4/6"}</span>
+                    </div>
+                    <div style=style_btn_list>
+                        {for (0..btns.len()).map(calc_btn)}
+                    </div>
+                </div>
             </div>
         }
     }
@@ -67,7 +118,7 @@ impl Model {
     fn view_barrier(&self) -> Html {
         if self.with_barrier {
             html! {
-                <Barrier limit=10 onsignal=self.link.callback(|_| Msg::Repaint) />
+                <p>{ "No Click \"toggle\"!" }</p>
             }
         } else {
             html! {
