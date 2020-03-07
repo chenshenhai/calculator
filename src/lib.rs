@@ -71,7 +71,7 @@ impl Component for Model {
 
         let style_container = {
             vec![
-                "width: 480px",
+                "max-width: 480px",
                 "background: #2a2c2f",
                 "margin: 0 auto",
                 "color: #ffffff",
