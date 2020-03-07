@@ -38,20 +38,24 @@ impl Component for Model {
                     let char_str = value.to_string();
                     self.expression.push_str(&char_str);
                     self.prev_char = value;
+                } else if value == '(' || value == ')'{
+                    let char_str = value.to_string();
+                    self.expression.push_str(&char_str);
+                    self.prev_char = value;
+                } else if value == 'C' {
+                    self.expression.clear();
+                    self.prev_char = ' ';
                 } else if self.prev_char.is_digit(10) == true {
-                    if value == '=' {
-                        self.console.log("do calculate!");
-                        let result = calc_expression(&self.expression);
-                        self.expression.clear();
-                        self.expression.push_str(&result);
-                        self.prev_char = ' ';
-                    } else if value == '+' || value == '-' || value == '*' || value == '/' {
+                     if value == '+' || value == '-' || value == '*' || value == '/' {
                         let char_str = value.to_string();
                         self.expression.push_str(&char_str);
                         self.prev_char = value;
                     }
-                } else if value == 'C' {
+                } else if value == '=' && (self.prev_char.is_digit(10) == true || self.prev_char == ')') {
+                    self.console.log("do calculate!");
+                    let result = calc_expression(&self.expression);
                     self.expression.clear();
+                    self.expression.push_str(&result);
                     self.prev_char = ' ';
                 }
                 self.console.log(&self.expression);
