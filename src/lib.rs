@@ -1,22 +1,17 @@
 #![recursion_limit = "128"]
 
-mod button;
-mod counter;
-mod calc_btn;
-use counter::{Color, Counter};
-use calc_btn::{CalcButton};
 use yew::prelude::*;
+use yew::services::ConsoleService;
 
 pub struct Model {
     link: ComponentLink<Self>,
     with_barrier: bool,
-    color: Color,
+    console: ConsoleService,
 }
 
 pub enum Msg {
-    Repaint,
     Toggle,
-    ChildClicked(u32),
+    ChildClicked(char),
 }
 
 
@@ -28,47 +23,42 @@ impl Component for Model {
         Model {
             link,
             with_barrier: false,
-            color: Color::Red,
+            console: ConsoleService::new(),
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::Repaint => {
-                self.color = Color::Blue;
-                true
-            }
             Msg::Toggle => {
+                self.console.log("hello world");
                 self.with_barrier = !self.with_barrier;
                 true
             }
-            Msg::ChildClicked(_value) => false,
+            Msg::ChildClicked(_value) => {
+                let char_str = _value.to_string();
+                self.console.log(&char_str);
+                self.with_barrier = !self.with_barrier;
+                true
+            },
         }
     }
 
     fn view(&self) -> Html {
-        let btns = vec![
-            "C", "(", ")", "/",
-            "7", "8", "9", "*",
-            "4", "5", "6", "-",
-            "1", "2", "3", "+",
-            "0", ".", "=", ""
-        ];
-        let counter = |x| {
-            html! {
-                <Counter initial=x color=&self.color
-                    onclick=self.link.callback(Msg::ChildClicked) />
-            }
+        let style_btn_item = {
+            vec![
+                "width: 25%",
+                "float: left",
+                "height: 60px",
+                "line-height: 60px",
+                "text-align: center",
+                "font-size: 28px",
+                "cursor: pointer",
+                "border: 1px solid #272d2d",
+                "box-sizing: border-box",
+                "background: #5f5f62",
+                "user-select: none"
+            ].join("; ") + ";"
         };
-        let calc_btn = |x| {
-            html! {
-                <CalcButton>
-                    <span>{btns[x]}</span>
-                </CalcButton>
-            }
-        };
-
-
         let style_container = {
             vec![
                 "max-width: 480px",
@@ -83,7 +73,8 @@ impl Component for Model {
                 "background: #2a2c2f",
                 "font-size: 28px",
                 "padding: 0 30px",
-                "box-sizing: border-box"
+                "box-sizing: border-box",
+                "text-align: right"
             ].join("; ") + ";"
         };
 
@@ -94,21 +85,33 @@ impl Component for Model {
                 "overflow: hidden"
             ].join("; ") + ";"
         };
+        let btns: Vec<char> = vec![
+            'C', '(', ')', '/',
+            '7', '8', '9', '*',
+            '4', '5', '6', '-',
+            '1', '2', '3', '+',
+            '0', '.', '=', ' '
+        ];
+        let calc_btn = |x| {
+            let _char = btns[x];
+            html! {
+                <div style=style_btn_item 
+                    onclick=self.link.callback(move|_| Msg::ChildClicked(_char))
+                >
+                    {_char}
+                </div>
+            }
+        };
+
+
         
         html! {
             <div style=style_container>
-                <button onclick=self.link.callback(|_| Msg::Toggle)>{ "Toggle" }</button>
-                { self.view_barrier() }
-                {for (0..0).map(counter)}
-                // <!-- calculator -->
-
-                <div >
-                    <div style=style_screen>
-                        <span>{"1+(2-3)*4/6"}</span>
-                    </div>
-                    <div style=style_btn_list>
-                        {for (0..btns.len()).map(calc_btn)}
-                    </div>
+                <div style=style_screen>
+                    <span>{"1+(2-3)*4/6"}</span>
+                </div>
+                <div style=style_btn_list>
+                    {for (0..btns.len()).map(calc_btn)}
                 </div>
             </div>
         }
