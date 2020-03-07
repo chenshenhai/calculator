@@ -1,7 +1,10 @@
 #![recursion_limit = "128"]
 
+mod calculate;
+
 use yew::prelude::*;
 use yew::services::ConsoleService;
+use calculate::calc_expression;
 
 pub struct Model {
     link: ComponentLink<Self>,
@@ -38,7 +41,9 @@ impl Component for Model {
                 } else if self.prev_char.is_digit(10) == true {
                     if value == '=' {
                         self.console.log("do calculate!");
+                        let result = calc_expression(&self.expression);
                         self.expression.clear();
+                        self.expression.push_str(&result);
                         self.prev_char = ' ';
                     } else if value == '+' || value == '-' || value == '*' || value == '/' {
                         let char_str = value.to_string();
