@@ -90,7 +90,8 @@ impl Component for Model {
         let style_btn_list = {
             vec![
                 "width: 100%",
-                "display: flex",
+                "display: block",
+                "overflow: hidden"
             ].join("; ") + ";"
         };
         

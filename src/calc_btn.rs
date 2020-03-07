@@ -32,15 +32,22 @@ impl Component for CalcButton {
 
         let style_btn_item = {
             vec![
-                "width: 100%",
-                "flex: 1",
-                "height: 80px"
+                "width: 25%",
+                "float: left",
+                "height: 80px",
+                "line-height: 80px",
+                "text-align: center",
+                "font-size: 28px",
+                "cursor: pointer",
+                "border: 1px solid #272d2d",
+                "box-sizing: border-box",
+                "background: #5f5f62"
             ].join("; ") + ";"
         };
         html! {
-            <button style=style_btn_item>
+            <div style=style_btn_item>
                 { self.props.children.render() }
-            </button>
+            </div>
         }
     }
 }
