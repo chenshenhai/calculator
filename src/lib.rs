@@ -6,6 +6,7 @@ use yew::services::ConsoleService;
 pub struct Model {
     link: ComponentLink<Self>,
     expression: String,
+    prev_char: char,
     console: ConsoleService,
 }
 
@@ -22,15 +23,32 @@ impl Component for Model {
         Model {
             link,
             expression: "".to_string(),
+            prev_char: ' ',
             console: ConsoleService::new(),
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::ButtonClicked(_value) => {
-                let char_str = _value.to_string();
-                self.expression.push_str(&char_str);
+            Msg::ButtonClicked(value) => {
+                if value.is_digit(10) == true {
+                    let char_str = value.to_string();
+                    self.expression.push_str(&char_str);
+                    self.prev_char = value;
+                } else if self.prev_char.is_digit(10) == true {
+                    if value == '=' {
+                        self.console.log("do calculate!");
+                        self.expression.clear();
+                        self.prev_char = ' ';
+                    } else if value == '+' || value == '-' || value == '*' || value == '/' {
+                        let char_str = value.to_string();
+                        self.expression.push_str(&char_str);
+                        self.prev_char = value;
+                    }
+                } else if value == 'C' {
+                    self.expression.clear();
+                    self.prev_char = ' ';
+                }
                 self.console.log(&self.expression);
                 true
             },
@@ -85,7 +103,7 @@ impl Component for Model {
             '7', '8', '9', '*',
             '4', '5', '6', '-',
             '1', '2', '3', '+',
-            '0', '.', '=', ' '
+            '0', '=', ' ', ' '
         ];
         let calc_btn = |x| {
             let _char = btns[x];
