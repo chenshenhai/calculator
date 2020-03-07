@@ -5,13 +5,12 @@ use yew::services::ConsoleService;
 
 pub struct Model {
     link: ComponentLink<Self>,
-    with_barrier: bool,
+    expression: String,
     console: ConsoleService,
 }
 
 pub enum Msg {
-    Toggle,
-    ChildClicked(char),
+    ButtonClicked(char),
 }
 
 
@@ -22,22 +21,17 @@ impl Component for Model {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         Model {
             link,
-            with_barrier: false,
+            expression: "".to_string(),
             console: ConsoleService::new(),
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::Toggle => {
-                self.console.log("hello world");
-                self.with_barrier = !self.with_barrier;
-                true
-            }
-            Msg::ChildClicked(_value) => {
+            Msg::ButtonClicked(_value) => {
                 let char_str = _value.to_string();
-                self.console.log(&char_str);
-                self.with_barrier = !self.with_barrier;
+                self.expression.push_str(&char_str);
+                self.console.log(&self.expression);
                 true
             },
         }
@@ -72,7 +66,8 @@ impl Component for Model {
                 "width: 100%",
                 "background: #2a2c2f",
                 "font-size: 28px",
-                "padding: 0 30px",
+                "min-height: 80px",
+                "padding: 20px 30px",
                 "box-sizing: border-box",
                 "text-align: right"
             ].join("; ") + ";"
@@ -96,19 +91,17 @@ impl Component for Model {
             let _char = btns[x];
             html! {
                 <div style=style_btn_item 
-                    onclick=self.link.callback(move|_| Msg::ChildClicked(_char))
+                    onclick=self.link.callback(move|_| Msg::ButtonClicked(_char))
                 >
                     {_char}
                 </div>
             }
         };
 
-
-        
         html! {
             <div style=style_container>
                 <div style=style_screen>
-                    <span>{"1+(2-3)*4/6"}</span>
+                    <span>{&self.expression}</span>
                 </div>
                 <div style=style_btn_list>
                     {for (0..btns.len()).map(calc_btn)}
@@ -118,16 +111,5 @@ impl Component for Model {
     }
 }
 
-impl Model {
-    fn view_barrier(&self) -> Html {
-        if self.with_barrier {
-            html! {
-                <p>{ "No Click \"toggle\"!" }</p>
-            }
-        } else {
-            html! {
-                <p>{ "Click \"toggle\"!" }</p>
-            }
-        }
-    }
-}
+// impl Model {
+// }
