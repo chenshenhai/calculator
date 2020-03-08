@@ -1,7 +1,7 @@
 #![recursion_limit = "128"]
 
 mod calculate;
-
+mod calc;
 use yew::prelude::*;
 use yew::services::ConsoleService;
 use calculate::calc_expression;
@@ -10,6 +10,7 @@ pub struct Model {
     link: ComponentLink<Self>,
     expression: String,
     prev_char: char,
+    is_over: bool,
     console: ConsoleService,
 }
 
@@ -28,13 +29,25 @@ impl Component for Model {
             expression: "".to_string(),
             prev_char: ' ',
             console: ConsoleService::new(),
+            is_over: false,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::ButtonClicked(value) => {
-                if value.is_digit(10) == true {
+                if self.is_over == true {
+                    self.expression.clear();
+                    self.is_over = false;
+                }
+                if value == '='{
+                    self.console.log("do calculate!");
+                    let result = calc_expression(&self.expression);
+                    self.expression.clear();
+                    self.expression.push_str(&result);
+                    self.prev_char = ' ';
+                    self.is_over = true;
+                } else if value.is_digit(10) == true {
                     let char_str = value.to_string();
                     self.expression.push_str(&char_str);
                     self.prev_char = value;
@@ -51,12 +64,6 @@ impl Component for Model {
                         self.expression.push_str(&char_str);
                         self.prev_char = value;
                     }
-                } else if value == '=' && (self.prev_char.is_digit(10) == true || self.prev_char == ')') {
-                    self.console.log("do calculate!");
-                    let result = calc_expression(&self.expression);
-                    self.expression.clear();
-                    self.expression.push_str(&result);
-                    self.prev_char = ' ';
                 }
                 self.console.log(&self.expression);
                 true
@@ -137,6 +144,3 @@ impl Component for Model {
         }
     }
 }
-
-// impl Model {
-// }
