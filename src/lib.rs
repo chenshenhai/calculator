@@ -1,10 +1,9 @@
 #![recursion_limit = "128"]
 
-mod calculate;
 mod calc;
 use yew::prelude::*;
 use yew::services::ConsoleService;
-use calculate::calc_expression;
+use calc::calc_expression;
 
 pub struct Model {
     link: ComponentLink<Self>,
