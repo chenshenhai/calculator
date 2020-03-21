@@ -1,4 +1,4 @@
-// Copyright 2018-2020 the chenshenhai/rust_note authors. All rights reserved. MIT license.
+// Copyright 2020 the chenshenhai/rust_note authors. All rights reserved. MIT license.
 
 // This code has been ported almost directly from https://github.com/chenshenhai/rust_note/blob/master/demo/calc/src/calc.rs
 // Copyright 2020 The Authors. All rights reserved. MIT license.
